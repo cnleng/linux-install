@@ -1,2 +1,2 @@
 # linux-install
-Some Software Installation Process in Linux Envionment
+Some Software/Tools Turorial Installation in Linux Envionment
