@@ -44,21 +44,29 @@ swapoff -a
 # Comment out swap line in fstab so that it remains disabled after reboot
 vi /etc/fstab
 ```
+Tocreate your cluster
+```
+kubeadm init --kubernetes-version stable-1.13  --pod-network-cidr=10.244.0.0/16
+```
+
 To start using your cluster, you need to run the following as a regular user:
 ```
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
+
 Alternatively, if you are the root user, you can run:
 ```
 export KUBECONFIG=/etc/kubernetes/admin.conf
 ```
+
 You should now deploy a pod network to the cluster.
 https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#pod-network
 ```
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/62e44c867a2846fefb68bd5f178daf4da3095ccb/Documentation/kube-flannel.yml
 ```
+
 You can now join any number of machines by running the following on each node
 as root:
 ```
