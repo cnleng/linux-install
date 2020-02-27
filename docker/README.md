@@ -18,7 +18,7 @@ su ${USER}
 id -nG
 ```
 
-Install Kubernetes
+Alternatively
 ------------------
 ```
 sudo apt-get update && apt-get install -y curl apt-transport-https
@@ -29,8 +29,9 @@ deb https://download.docker.com/linux/$(lsb_release -si | tr '[:upper:]' '[:lowe
 EOF
 sudo apt-get update && sudo apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep 17.03 | head -1 | awk '{print $3}')
 ```
-Install Kubeadm
+Install Kubernetes
 ------------------
+Install Kubeadm
 ```
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
