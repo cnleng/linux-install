@@ -71,4 +71,9 @@ You can now join any number of machines by running the following on each node
 as root:
 ```
   kubeadm join 100.80.245.242:6443 --token b4l44r.babq3qyjgqcsgcph --discovery-token-ca-cert-hash sha256:ac1cb1bdca98c32db61e38a2a8953de66f333ba04525c8083faa322781ed3d22
-  ```
+```
+
+Check all nodes in cluster (on master)
+```
+kubectl get nodes
+```
