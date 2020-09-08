@@ -1,0 +1,28 @@
+---
+- set_fact:
+        HOME_FOLDER: "{{ lookup('env','HOME') }}"
+
+- name: Initialize Kubernetes clusters
+  command: "{{ K8S_NTWK }}"
+
+
+- name:  Setup the kube config file
+  command: "{{ item }}"
+  with_items:
+  - mkdir -p "{{ HOME_FOLDER }}"/.kube
+  - sudo cp -i /etc/kubernetes/admin.conf "{{ HOME_FOLDER }}"/.kube/config
+  - sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+- name: Setup Container networking provider
+  become: false
+  command: "{{ K8S_CONTAINER_NTWK }}"
+
+ 
+- name: Generate join command
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+ 
+- name: Copy join command to local file
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"

@@ -1,0 +1,20 @@
+---
+- hosts: spinnaker
+  gather_facts: yes
+  become_user: root
+  tasks:
+  - name: Configure K8s spinnaker objects
+    shell: echo 'k8s config'
+  - name: Install Halyard
+    shell: echo 'Halyard config'
+  - name: Install MinIO
+    shell: echo 'MinIO config'
+  - name: Configure the Spinnaker deployment
+    shell: echo 'Configure the Spinnaker deployment'
+  - name: Deploy Spinnaker
+    shell: echo 'Deploy Spinnaker'
+- hosts: halyard
+  become_user: root
+  tasks:
+  - name: Install mysql
+    apt: pkg=mysql-server state=present

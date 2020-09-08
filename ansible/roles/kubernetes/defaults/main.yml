@@ -1,0 +1,8 @@
+---
+K8S_GPG_KEY: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+K8S_REPO: deb [arch=amd64] http://apt.kubernetes.io/ kubernetes-xenial main
+K8S_PACKAGES:
+  - kubeadm
+  - kubectl
+  - kubelet
+  - kubernetes-cni

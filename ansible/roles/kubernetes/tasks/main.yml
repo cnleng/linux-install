@@ -1,0 +1,44 @@
+---
+- name: Adding k8s gpg key
+  apt_key:
+    url: "{{ K8S_GPG_KEY }}"
+    state: present
+  become: true
+
+
+- name: Adding k8s repository
+  apt_repository:
+    repo: "{{ K8S_REPO }}"
+    state: present
+    filename: kubernetes.list
+    update_cache: yes
+  become: true
+
+
+- name: Installing Kubenertes binaries
+  apt:
+    name: "{{ K8S_PACKAGES }}"
+    state: latest
+    update_cache: yes
+  become: true
+
+
+- name: Disable swap file
+  command: swapoff -a
+
+
+- name: Remove swap file from /etc/fstab
+  mount:
+      name: "{{ item }}"
+      fstype: swap
+      state: absent
+  with_items:
+      - swap
+      - none
+
+
+- name: Restart kubelet
+    service:
+      name: kubelet
+      daemon_reload: yes
+      state: restarted
