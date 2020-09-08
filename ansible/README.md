@@ -1,4 +1,4 @@
-# Data Cohenrece Challenge - Ansible
+# Docker & kubernetes - Ansible
 
 #### - [Purpose](README.md#purpose)
 #### - [Requirements](README.md#requirements)
