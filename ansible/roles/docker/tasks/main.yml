@@ -43,6 +43,3 @@
   become: true
 
 
-handlers:
-    - name: docker status
-      service: name=docker state=started
