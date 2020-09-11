@@ -1,0 +1,7 @@
+- name: Copy Spinnaker account files files
+  copy:
+    src:  {{ SPINNAKER_ACCT_FILE }}
+    dest: /tmp/spinacct.yaml
+    owner: labadmin
+    group: labadmin
+    mode: '0644'

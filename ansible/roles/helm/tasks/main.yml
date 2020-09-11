@@ -1,0 +1,22 @@
+- name: Set Home Folder
+  set_fact:
+     HOME_FOLDER: "{{ lookup('env','HOME') }}"
+
+- name: Copy Spinnaker account files
+  copy:
+    src:  "{{ SPINNAKER_ACCT_FILE }}"
+    dest: /tmp/spinacct.yaml
+    owner: labadmin
+    group: labadmin
+    mode: '0644'
+
+- name: Getting Halyard installation script
+  get_url:
+     url: "{{ HALYARD_INSTALLATION_SCRIPT }}"
+     dest: "{{ HOME_FOLDER }}/InstallHalyard.sh"
+     mode: 0440
+
+
+- name: Running Halyard instalaltion script
+  command: "bash {{ HOME_FOLDER }}/InstallHalyard"
+  become: true
