@@ -1,0 +1,10 @@
+[master]
+dev-cyril-01 ansible_host=100.80.250.185
+
+[workers]
+dev-cyril-02 ansible_host=100.80.250.219
+#dev-cyril-03 ansible_host=100.80.250.236
+dev-cyril-04 ansible_host=100.80.250.240
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

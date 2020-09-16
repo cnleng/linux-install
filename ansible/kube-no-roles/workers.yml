@@ -1,0 +1,39 @@
+- hosts: master
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+
+    - name: set join command
+      set_fact:
+        join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
+
+- hosts: workers
+  become: yes
+  tasks:
+    - name: Debug Join Command
+      debug:
+        var: hostvars[groups['master'][0]]['join_command']
+
+    - name: Disable swap file
+      command: swapoff -a
+      become: true
+
+    - name: Remove swap file from /etc/fstab
+      mount:
+         name: "{{ item }}"
+         fstype: swap
+         state: absent
+      with_items:
+         - swap
+         - none
+      become: true
+
+    - name: join cluster
+      shell: "{{ hostvars[groups['master'][0]]['join_command'] }} >> node_joined.txt"
+      args:
+        chdir: $HOME
+        creates: node_joined.txt
