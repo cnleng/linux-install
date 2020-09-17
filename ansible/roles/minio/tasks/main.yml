@@ -1,0 +1,13 @@
+---
+- name: Install minio helm chart
+  helm:
+    host: localhost
+    chart:
+      name: minio
+      source:
+        type: git
+        location: https://github.com/helm/charts/tree/master/stable/minio
+    state: present
+    name: minio
+    namespace: default
+

@@ -1,2 +1,2 @@
 ---
-HALYARD_INSTALLATION_SCRIPT: https://raw.githubusercontent.com/spinnaker/halyard/master/install/debian/InstallHalyard.sh
+helm_version: '2.12.3'

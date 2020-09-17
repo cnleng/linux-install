@@ -1,22 +1,69 @@
-- name: Set Home Folder
-  set_fact:
-     HOME_FOLDER: "{{ lookup('env','HOME') }}"
+---
+- name: Check for existing Helm installation
+  stat:
+    path: /usr/local/bin/helm
+  register: stat_helm_result
 
-- name: Copy Spinnaker account files
-  copy:
-    src:  "{{ SPINNAKER_ACCT_FILE }}"
-    dest: /tmp/spinacct.yaml
-    owner: labadmin
-    group: labadmin
-    mode: '0644'
+- name: Check Helm version
+  command: helm version
+  changed_when: no
+  failed_when: no
+  register: helm_version_result
+  when: stat_helm_result.stat.exists
 
-- name: Getting Halyard installation script
+- name: Get Helm artifact checksum
+  uri:
+    url: 'https://storage.googleapis.com/kubernetes-helm/helm-v{{ helm_version }}-linux-amd64.tar.gz.sha256'
+    return_content: yes
+  register: helm_checksum_result
+  when: not stat_helm_result.stat.exists or
+        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
+
+- name: Create temporary directory
+  tempfile:
+    state: directory
+    suffix: helm
+  register: helm_tempdir
+  when: not stat_helm_result.stat.exists or
+        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
+
+- name: Download Helm dist archive
   get_url:
-     url: "{{ HALYARD_INSTALLATION_SCRIPT }}"
-     dest: "{{ HOME_FOLDER }}/InstallHalyard.sh"
-     mode: 0440
+    url: 'https://storage.googleapis.com/kubernetes-helm/helm-v{{ helm_version }}-linux-amd64.tar.gz'
+    dest: '{{ helm_tempdir.path }}/helm-v{{ helm_version }}-linux-amd64.tar.gz'
+    checksum: "sha256:{{ helm_checksum_result.content | regex_search('^[0-9a-f]{64}') }}"
+    mode: 0644
+  when: not stat_helm_result.stat.exists or
+        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
 
+- name: Unpack Helm dist archive
+  unarchive:
+    remote_src: yes
+    src: '{{ helm_tempdir.path }}/helm-v{{ helm_version }}-linux-amd64.tar.gz'
+    dest: '{{ helm_tempdir.path }}/'
+  when: not stat_helm_result.stat.exists or
+        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
 
-- name: Running Halyard instalaltion script
-  command: "bash {{ HOME_FOLDER }}/InstallHalyard"
-  become: true
+- name: Install Helm binary
+  copy:
+    remote_src: yes
+    src: '{{ helm_tempdir.path }}/linux-amd64/helm'
+    dest: /usr/local/bin/helm
+    mode: 0755
+  when: not stat_helm_result.stat.exists or
+        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
+
+- name: Cleanup installation files
+  file:
+    path: '{{ helm_tempdir.path }}'
+    state: absent
+  when: not stat_helm_result.stat.exists or
+        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
+
+- name: Setup Tiller
+  become_user: labadmin
+  command: "{{ item }}"
+  with_items:
+  - kubectl -n kube-system create sa tiller
+  - kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+  - helm init --service-account tiller --upgrade
