@@ -1,12 +1,18 @@
 ---
-- name: Adding k8s gpg key
+- name: install APT Transport HTTPS
+  apt:
+    name: apt-transport-https
+    state: present
+  become: true
+
+- name: Adding Kubernetes gpg key
   apt_key:
     url: "{{ K8S_GPG_KEY }}"
     state: present
   become: true
 
 
-- name: Adding k8s repository
+- name: Adding kubernetes APT repository
   apt_repository:
     repo: "{{ K8S_REPO }}"
     state: present
@@ -15,10 +21,10 @@
   become: true
 
 
-- name: Installing Kubenertes binaries
+- name: Installing Kubenertes (kubelet, kubeadm, kubectl) binaries
   apt:
     name: "{{ K8S_PACKAGES }}"
-    state: latest
+    state: present
     update_cache: yes
   become: true
 
@@ -39,9 +45,9 @@
   become: true
 
 
-- name: Restart kubelet
-  service:
-      name: kubelet
-      daemon_reload: yes
-      state: restarted
-  become: true
+  #- name: Restart kubelet
+  #  service:
+  #      name: kubelet
+  #      daemon_reload: yes
+  #      state: restarted
+  #  become: true

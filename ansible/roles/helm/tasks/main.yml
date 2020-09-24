@@ -45,20 +45,24 @@
         helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
 
 - name: Install Helm binary
+  become: yes
+  become_user: labadmin
   copy:
     remote_src: yes
     src: '{{ helm_tempdir.path }}/linux-amd64/helm'
     dest: /usr/local/bin/helm
     mode: 0755
-  when: not stat_helm_result.stat.exists or
-        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
+    #  when: not stat_helm_result.stat.exists or
+    #        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
 
 - name: Cleanup installation files
+  become: yes
+  become_user: labadmin
   file:
     path: '{{ helm_tempdir.path }}'
     state: absent
-  when: not stat_helm_result.stat.exists or
-        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
+    #  when: not stat_helm_result.stat.exists or
+    #        helm_version_result.stdout_lines | first | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') != helm_version
 
 - name: Setup Tiller
   become_user: labadmin

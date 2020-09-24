@@ -1,22 +1,18 @@
 ---
-- hosts: master
+- hosts: all
   gather_facts: yes
   become: yes
   roles:
-    - role: helm
-      #    - role: kubernetes
+    - role: docker
+    - role: kube
 
-      #- hosts: kube_master
-      #  gather_facts: yes
-      #  become_user: root
-      #  roles:
-      #    - role: kube_master
+- hosts: master
+  gather_facts: yes
+  roles:
+    - role: kube_master
+      #- role: helm
 
-      #- hosts: kube_worker
-      # gather_facts: yes
-      #  become_user: root
-      #  roles:
-      #    - role: kube_worker
-      #    - role: halyard
-      #    - role: minio
-      #    - role: spinnaker
+- hosts: workers
+  gather_facts: yes
+  roles:
+      - role: kube_worker

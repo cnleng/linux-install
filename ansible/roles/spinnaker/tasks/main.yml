@@ -1,7 +1,17 @@
-- name: Copy Spinnaker account files files
-  copy:
-    src:  {{ SPINNAKER_ACCT_FILE }}
-    dest: /tmp/spinacct.yaml
-    owner: labadmin
-    group: labadmin
-    mode: '0644'
+#- name: Copy Spinnaker account files files
+#  copy:
+#    src:  {{ SPINNAKER_ACCT_FILE }}
+#    dest: /tmp/spinacct.yaml
+#    owner: labadmin
+#    group: labadmin
+#    mode: '0644'
+- name: Create Spinnaker Namespace
+  become_user: labadmin
+  command: kubectl create namespace spinnaker
+
+- name: Install Spinnaker with default values
+  become_user: labadmin
+  command: "{{ item }}"
+  with_items: 
+  - helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+  - helm install spinnaker stable/spinnaker
