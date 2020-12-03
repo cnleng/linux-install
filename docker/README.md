@@ -29,6 +29,12 @@ Install Kubernetes Private Registry
 ----------------------------------- 
 https://www.linuxtechi.com/setup-private-docker-registry-kubernetes/
 
+Install Xfce desktop
+--------------------
+sudo apt install xfce4 -y
+sudo apt get install lightdm -y
+sudo apt install xubuntu-default-settings
+
 Alternatively
 ------------------
 ```
